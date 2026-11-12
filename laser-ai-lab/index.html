@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1015">
+  <meta name="description" content="鏡を回し、光をつなぐ。C++ / WebAssemblyで動くレーザー対戦ゲームと、再現可能なゲームAIの比較実験室。">
+  <title>LASER / AI LAB — 光を、戦略に。</title>
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="./style.css">
+  <script type="module" src="./script.js"></script>
+</head>
+<body>
+  <div class="ambient" aria-hidden="true"></div>
+  <header class="site-header">
+    <a class="brand" href="./" aria-label="LASER AI LAB ホーム">
+      <svg class="brand-mark" viewBox="0 0 40 40" fill="none" aria-hidden="true"><path d="M4 29h14V11h18" stroke="currentColor" stroke-width="3"/><path d="m10 34 17-27" stroke="currentColor" stroke-width="3"/><circle cx="34" cy="11" r="3" fill="currentColor"/></svg>
+      <span>LASER <span class="brand-slash">/</span> <strong>AI LAB</strong><small>TURN LIGHT INTO STRATEGY</small></span>
+    </a>
+    <nav class="main-nav" aria-label="メインメニュー">
+      <button class="nav-button active" data-tab="arena" aria-current="page"><span class="nav-number">01</span> 対戦ラボ</button>
+      <button class="nav-button" data-tab="experiment"><span class="nav-number">02</span> 実験・比較</button>
+      <button class="nav-button" data-tab="library"><span class="nav-number">03</span> AIライブラリ</button>
+    </nav>
+    <div class="header-tools"><span class="runtime-badge" id="runtime-badge"><i></i> ENGINE LOADING</span><button class="icon-button help-button" id="help-button" aria-label="ルールを開く">?</button></div>
+  </header>
+  <main class="main-shell">
+    <section id="panel-arena" class="tab-panel">
+      <div class="page-heading"><div><div class="eyebrow"><span class="tiny-line"></span> THE STRATEGY PLAYGROUND</div><h1>一手で、光の先を変える<span class="accent">。</span></h1><p>100枚の鏡、3つのコア。あなたの一手か、AIの戦略か。</p></div><div class="specs"><div><b>15<span> × </span>15</b><small>BOARD</small></div><div><b>100</b><small>MIRRORS</small></div><div><b>30</b><small>MAX TURNS</small></div></div></div>
+      <div class="arena-grid">
+        <aside class="left-column">
+          <section class="panel setup-panel"><div class="panel-heading"><h2>対局の設定</h2><span class="mono faint">SETUP</span></div>
+            <label class="field-label" for="match-mode">プレイモード</label>
+            <select id="match-mode"><option value="human">あなた vs AI</option><option value="watch">AI vs AI を観戦</option></select>
+            <div id="human-settings"><label class="field-label" for="human-side">あなたの手番</label><select id="human-side"><option value="0">先手 · PLAYER 01</option><option value="1">後手 · PLAYER 02</option></select><label class="field-label" for="opponent-ai">対戦するAI</label><select id="opponent-ai"></select></div>
+            <div id="watch-settings" hidden><label class="field-label" for="first-ai">先手のAI</label><select id="first-ai"></select><label class="field-label" for="second-ai">後手のAI</label><select id="second-ai"></select></div>
+            <label class="field-label" for="board-seed">盤面シード <span class="field-hint">同じ値で再現</span></label><div class="seed-field"><input id="board-seed" value="20261112" maxlength="64" spellcheck="false"><button id="shuffle-seed" class="icon-button" aria-label="新しいシードを選ぶ">↻</button></div>
+            <button class="button primary full-width" id="new-match"><span>新しい対局</span><span aria-hidden="true">↗</span></button>
+            <div class="setup-divider"></div>
+            <label class="field-label" for="speed">再生速度</label><select id="speed"><option value="1100">ゆっくり</option><option value="550" selected>標準</option><option value="120">高速</option></select>
+            <label class="field-label" for="move-budget">1手のシミュレーション上限</label><select id="move-budget"><option value="1000">1,000 · 軽量</option><option value="12000" selected>12,000 · 標準</option><option value="30000">30,000 · 拡張AI向け</option></select>
+            <p class="small-note">対局開始時の設定を使用します。上限は思考時間ではありません。</p>
+          </section>
+          <section class="panel field-notes"><span class="eyebrow">HOW TO PLAY</span><h3>鏡をひとつ、回すだけ。</h3><p>鏡をクリックすると90°回転。3基から光が走り、当たったコアはその手を指した人の得点になります。</p><div class="rule-mini"><span>/</span><span class="faint">↔</span><span>\</span><small>1 TURN / 1 ROTATION</small></div><button class="text-button" id="rules-link">詳しいルール <span>↗</span></button></section>
+        </aside>
+        <section class="arena-center">
+          <div class="scoreboard panel">
+            <div class="player-card first" id="player-first"><span class="player-index">PLAYER 01 / 先手</span><div class="player-line"><span class="player-dot"></span><strong id="first-name">あなた</strong><b id="first-score">0</b></div></div>
+            <div class="scoreboard-center"><span class="mono">CORE RACE</span><div class="core-pips" id="core-pips"><i></i><i></i><i></i></div><span class="mono" id="turn-count">00 / 30</span></div>
+            <div class="player-card second" id="player-second"><span class="player-index">PLAYER 02 / 後手</span><div class="player-line"><span class="player-dot"></span><strong id="second-name">AI02</strong><b id="second-score">0</b></div></div>
+          </div>
+          <div class="board-panel panel"><div class="board-topbar"><span id="status-pill" class="status-pill"><i></i><span>盤面を準備しています</span></span><div class="board-actions"><button class="small-icon" id="beam-toggle" aria-label="レーザー表示を切り替える" aria-pressed="true">光</button><button class="small-icon" id="zoom-toggle" aria-label="盤面を拡大" aria-pressed="false">＋</button></div></div>
+            <div class="board-scroll" id="board-scroll"><canvas id="board" width="760" height="760" tabindex="0" role="application" aria-label="15×15のゲーム盤。矢印キーでマスを選び、Enterで鏡を回転。">このゲームはCanvas対応ブラウザで動きます。</canvas></div>
+            <div id="result-banner" class="result-banner" hidden></div>
+            <div class="board-bottom"><span class="board-hint" id="board-hint">鏡をクリックして回転</span><span class="mono faint" id="position-readout">A1 — O15</span></div>
+          </div>
+          <div class="playback panel"><button id="play-pause" class="button play-button"><span id="play-icon">Ⅱ</span><span id="play-label">一時停止</span></button><button id="step-button" class="icon-button" aria-label="1手進める">▹│</button><div class="timeline"><label for="timeline" class="sr-only">棋譜の表示位置</label><input id="timeline" type="range" min="0" max="0" value="0"><span id="timeline-label" class="mono">0 / 0</span></div><button id="export-match" class="icon-button" aria-label="棋譜をJSON保存">↓</button><button id="import-match" class="icon-button" aria-label="棋譜JSONを読み込む">↑</button><input id="replay-file" type="file" accept=".json,application/json" hidden></div>
+          <div class="board-caption"><span><i class="signal-dot"></i> 3 CORES · SHARED FIELD</span><span id="certificate-label">到達可能性を検証中</span></div>
+        </section>
+        <aside class="right-column">
+          <section class="panel decision-panel"><div class="panel-heading"><h2>一手のインサイト</h2><span class="live-tag" id="decision-tag">READY</span></div><div class="decision-id" id="decision-ai">YOUR MOVE</div><h3 id="decision-title">光のルートを探そう。</h3><p id="decision-description">鏡を1枚回すと、その先の経路が変わります。3つのコアは両者共通です。</p><div class="decision-metrics"><div><small>思考時間</small><strong id="think-time">—<span> ms</span></strong></div><div><small>シミュレーション</small><strong id="simulations">—</strong></div></div><div id="decision-detail" class="decision-detail">AIの選択と計算量が、ここに表示されます。</div></section>
+          <section class="panel log-panel"><div class="panel-heading"><h2>対局ログ</h2><span id="log-count" class="mono faint">00 MOVES</span></div><div id="move-log" class="move-log"><div class="empty-log"><span>↗</span><p>最初の一手から、<br>ここに記録されます。</p></div></div></section>
+          <button id="go-experiment" class="experiment-link"><span class="eyebrow">TAKE IT FURTHER</span><strong>どのAIが、本当に強い？ <span>↗</span></strong><small>先後を入れ替え、一括対戦で比較。</small></button>
+        </aside>
+      </div>
+    </section>
+    <section id="panel-experiment" class="tab-panel" hidden>
+      <div class="page-heading"><div><div class="eyebrow"><span class="tiny-line"></span> EVIDENCE, NOT IMPRESSIONS</div><h1>強さを、データで確かめる<span class="accent">。</span></h1><p>同じ盤面、入れ替えた先後、再現できる乱数。比較の条件まで残す実験室。</p></div><span class="outline-tag">PAIRED-BOARD BENCHMARK</span></div>
+      <div class="experiment-layout"><aside class="panel experiment-setup"><div class="panel-heading"><h2>実験の設定</h2><span class="mono faint">PROTOCOL</span></div><span class="field-label">参加AI <span class="field-hint">2種類以上</span></span><div id="experiment-agents" class="ai-checkboxes"></div><label class="field-label" for="experiment-boards">検証する盤面数</label><select id="experiment-boards"><option value="10">10 · 動作確認</option><option value="50" selected>50 · 小規模比較</option><option value="200">200 · 本比較</option><option value="1000">1,000 · 詳細比較</option></select><label class="field-label" for="experiment-seed">実験シード</label><input id="experiment-seed" value="research-001" maxlength="64" spellcheck="false"><label class="field-label" for="experiment-budget">1手のシミュレーション上限</label><select id="experiment-budget"><option value="1000">1,000</option><option value="12000" selected>12,000</option><option value="30000">30,000</option></select><div id="experiment-estimate" class="experiment-estimate">50盤面 × 先後2局 = 100局</div><button id="start-experiment" class="button primary full-width">実験を開始 <span>↗</span></button><button id="stop-experiment" class="button danger full-width" hidden>停止して途中結果を残す</button><p class="small-note">実行中はこのタブを開いたままにしてください。対局は直列実行し、観戦は一時停止します。</p><div class="setup-divider"></div><span class="eyebrow">EXPERIMENT CONTRACT</span><p class="small-note">全AIが同じC++ルールを使用。両方の先後が完了した盤面ペアだけを集計します。アニメーション時間は思考時間に含みません。</p></aside>
+        <div class="experiment-results"><div class="experiment-progress panel"><div><span class="eyebrow" id="experiment-status">READY FOR AN EXPERIMENT</span><h2 id="experiment-progress-title">まだ、実験データはありません。</h2></div><span class="mono" id="experiment-counter">0 / 0</span><progress id="experiment-progress" value="0" max="1"></progress></div>
+          <div class="metric-grid"><div class="panel metric-card"><small>完了した対局</small><strong id="stat-games">—</strong><span>GAMES COMPLETED</span></div><div class="panel metric-card"><small>獲得コア数 / 対局</small><strong id="stat-cores">—</strong><span>ALL AGENTS / MATCH</span></div><div class="panel metric-card"><small>引き分け率</small><strong id="stat-draws">—</strong><span>DRAWS INCLUDED</span></div><div class="panel metric-card"><small>先手の得点率</small><strong id="stat-first">—</strong><span>WIN 1 / DRAW 0.5</span></div></div>
+          <section class="panel ranking-panel"><div class="panel-heading"><h2>比較ランキング</h2><div class="export-actions"><button id="export-csv" class="button subtle" disabled>CSV ↓</button><button id="export-experiment" class="button subtle" disabled>JSON ↓</button></div></div><div class="table-scroll"><table><thead><tr><th>AI</th><th>得点率</th><th>勝 / 分 / 敗</th><th>平均コア</th><th>思考時間 中央値</th><th>95%点</th><th>平均シミュレーション</th></tr></thead><tbody id="ranking-body"><tr><td colspan="7" class="empty-table">実験を開始すると、実測結果だけがここに表示されます。</td></tr></tbody></table></div><p class="table-footnote">得点率 =（勝ち数 + 引き分け数 × 0.5）÷ 対局数。順位は参加AIと盤面集合に依存します。</p></section>
+          <div class="analysis-grid"><section class="panel"><div class="panel-heading"><h2>直接対戦と不確実性</h2><span class="mono faint">95% CI</span></div><div id="pair-results" class="pair-results"><p class="empty-copy">先後をまとめた盤面ペア単位で評価します。</p></div><p class="small-note interval-note">Hoeffdingの保守的な区間に、多重比較のBonferroni補正を適用。区間が50%をまたぐ場合、優位とは判定しません。途中結果・停止時は参考値です。</p></section><section class="panel"><div class="panel-heading"><h2>対局の再検証</h2><span class="mono faint">REPLAY</span></div><div id="experiment-games" class="experiment-games"><p class="empty-copy">対局終了後、棋譜を選んで盤面を再生できます。</p></div></section></div>
+          <details class="panel methodology"><summary>この実験から言えること・言えないこと</summary><p>信頼区間は、検証済み盤面の生成分布から独立に抽出したとみなせる盤面ペアを単位にしています。同一盤面の先後2局を独立な2標本として数えません。疑似乱数による標本化を用い、生成器で採用される盤面に対する結果です。</p><p>事前に決めた盤面数を完了した最終結果を判断に使ってください。途中で好成績を見て停止した結果に、同じ95%の保証はありません。調整用シードと最終評価用シードを分け、複数の独立した実験で確認してください。</p><p>同じシミュレーション上限でも、実時間や実行する計算内容は同一ではありません。AI01は探索しません。ブラウザの負荷・省電力状態が思考時間に影響します。新しいAIは計算量と成績の両面で比較してください。</p><p>初期盤面の検証は「各コアを個別に破壊する2〜6回の操作手順がある」ことです。相手の妨害下での勝利や、全コアを30ターン以内に必ず獲得することは保証していません。</p></details>
+        </div>
+      </div>
+    </section>
+    <section id="panel-library" class="tab-panel" hidden>
+      <div class="page-heading"><div><div class="eyebrow"><span class="tiny-line"></span> BUILT TO KEEP GROWING</div><h1>次のAIは、あなたが作る<span class="accent">。</span></h1><p>選ぶ手は違っても、ルールと実験環境は同じ。追加したAIは画面に自動登録されます。</p></div><span class="outline-tag" id="library-count">2 AGENTS INSTALLED</span></div>
+      <div id="agent-library" class="agent-library"></div>
+      <div class="extension-grid"><section class="panel extension-panel"><span class="eyebrow">01 / C++ AGENT</span><h2>C++で、新しい探索を。</h2><p><code>cpp/ai/ai03_template.hpp</code> をコピーし、手を選ぶ関数を実装。<code>cpp/registry.hpp</code> に1行登録して、Wasmを再ビルドします。</p><pre><code>int myAI(const State&amp; state, Context&amp; ctx) {
+    // mirror ID: 0 .. 99
+    return ctx.rng.below(100);
+}</code></pre><p class="small-note">画面・ランキング・棋譜のコードを変える必要はありません。</p><a class="text-button" href="./docs/ADDING_AI.md" target="_blank" rel="noopener">AI追加ガイドを開く ↗</a></section><section class="panel extension-panel"><span class="eyebrow">02 / JAVASCRIPT AGENT</span><h2>ビルドなしで、試す。</h2><p><code>js/ai/example.js</code> をコピーし、<code>js/ai/custom.js</code> に登録。JavaScript版のAIも、同じWasmのルールエンジンで対戦できます。</p><pre><code>choose(state, context) {
+    const next = context.simulate(state, 0);
+    // inspect next.state and next.hits
+    return 0;
+}</code></pre><p class="small-note">自作AIは信頼できるコードだけを登録してください。</p><a class="text-button" href="./docs/RESEARCH.md" target="_blank" rel="noopener">研究・測定のガイドを開く ↗</a></section></div>
+      <div class="panel architecture"><span class="eyebrow">ONE SOURCE OF TRUTH</span><div><span>画面<br><b>HTML / CSS / JS</b></span><i>↔</i><span>共通エンジン<br><b>C++ → WebAssembly</b></span><i>↔</i><span>交換可能な戦略<br><b>AI01 / AI02 / …</b></span></div></div>
+    </section>
+    <div id="error-panel" class="error-panel" role="alert" hidden></div>
+  </main>
+  <footer class="site-footer"><span>LASER / AI LAB <b>v1.0</b></span><span>LOCAL-FIRST <i>·</i> NO EXTERNAL AI API <i>·</i> MADE FOR EXPERIMENTS</span><button id="footer-rules" class="text-button">ルール & 仕様 ↗</button></footer>
+  <dialog id="rules-dialog"><div class="dialog-heading"><span class="eyebrow">THE RULES / v1.0</span><button id="close-rules" class="icon-button" aria-label="閉じる">×</button></div><h2>光をつないで、コアを獲得。</h2><div class="rules-list"><div><b>01</b><p><strong>共通の盤面で交互に操作。</strong>15×15に鏡100枚、発射台3基、コア3個。鏡や発射台に所属はありません。</p></div><div><b>02</b><p><strong>1手で鏡を1枚、90°回転。</strong>「/」と「\」が切り替わります。位置は固定で、どの鏡も選択できます。パスはありません。</p></div><div><b>03</b><p><strong>回転直後に3基が同時発射。</strong>上下左右に進み、鏡の両面で反射します。コアに当たるとその光は止まり、その手のプレイヤーが1点を獲得。同じコアへの重複命中も1点です。</p></div><div><b>04</b><p><strong>合計30手で、獲得数を比較。</strong>3個すべてのコアが取られた場合は早期終了。同点なら引き分けです。獲得済みコアのマスは、次の発射から光を通します。</p></div><div><b>05</b><p><strong>光の交差は干渉しません。</strong>盤外・発射台への入射で停止。同じマスと進行方向に戻った経路は打ち切り、無限ループを防ぎます。</p></div></div><div class="rule-callout"><strong>初期盤面には「到達手順」があります。</strong><p>開始直後にはコアに命中しません。各コアに個別に到達できる2〜6回の操作手順を、実際のエンジンで検証しています。妨害された場合の勝利保証ではありません。</p></div><p class="small-note">キーボード操作：盤面にフォーカス → 矢印キー → Enter / Space。棋譜は下のスライダーで巻き戻せます。</p></dialog>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <div class="sr-only" id="announcer" aria-live="polite"></div>
+  <noscript><div class="error-panel">このゲームにはJavaScriptとWebAssemblyが必要です。</div></noscript>
+<script>
+    if (location.protocol === 'file:') {
+      const panel = document.getElementById('error-panel');
+      panel.hidden = false;
+      panel.textContent = 'このゲームはHTMLのダブルクリックでは起動できません。GitHub Pagesに公開するか、フォルダ内で「python -m http.server 8000」を実行し、ブラウザで http://localhost:8000 を開いてください。詳しくは START_HERE.md を参照してください。';
+      document.getElementById('runtime-badge').textContent = 'HTTP SERVER REQUIRED';
+    }
+  </script>
+</body>
+</html>
