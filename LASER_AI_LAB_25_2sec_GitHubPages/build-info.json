@@ -1,0 +1,23 @@
+{
+  "version": "2.1.0",
+  "agentCount": 25,
+  "mirrorCount": {
+    "min": 6,
+    "max": 200,
+    "default": 100
+  },
+  "wasmSHA256": "890b204e073774d82c513b4eb448a7ec58a9552d87e71a05e2315b27b336aacf",
+  "deploymentTested": false,
+  "packageVersion": "4.0.0",
+  "aiBudget": {
+    "millis": 2000,
+    "type": "cooperative-deadline (soft limit)",
+    "nodeSafetyCap": 2000000,
+    "selectableMillis": [
+      2,
+      20,
+      200,
+      2000
+    ]
+  }
+}

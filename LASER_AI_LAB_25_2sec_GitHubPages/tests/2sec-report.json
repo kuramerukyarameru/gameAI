@@ -1,0 +1,175 @@
+{
+  "agentCount": 25,
+  "defaultBudgetMs": 2000,
+  "maxSelectableBudgetMs": 2000,
+  "selectableBudgetsMs": [
+    2,
+    20,
+    200,
+    2000
+  ],
+  "mirrorCounts": [
+    6,
+    100,
+    200
+  ],
+  "shortBudgetDecisions": 150,
+  "fullBudgetDecisions": 25,
+  "fullGames": 18,
+  "fullBudgetAgentTimes": [
+    {
+      "agent": "AI01",
+      "elapsedMs": 0.02,
+      "nodes": 0,
+      "budgetHit": false
+    },
+    {
+      "agent": "AI02",
+      "elapsedMs": 12.09,
+      "nodes": 10106,
+      "budgetHit": false
+    },
+    {
+      "agent": "AI03",
+      "elapsedMs": 2000.03,
+      "nodes": 1157516,
+      "budgetHit": true
+    },
+    {
+      "agent": "AI04",
+      "elapsedMs": 10.85,
+      "nodes": 5200,
+      "budgetHit": false
+    },
+    {
+      "agent": "AI05",
+      "elapsedMs": 175.1,
+      "nodes": 91035,
+      "budgetHit": false
+    },
+    {
+      "agent": "AI06",
+      "elapsedMs": 2000.03,
+      "nodes": 1115002,
+      "budgetHit": true
+    },
+    {
+      "agent": "AI07",
+      "elapsedMs": 0.21,
+      "nodes": 100,
+      "budgetHit": false
+    },
+    {
+      "agent": "AI08",
+      "elapsedMs": 40.28,
+      "nodes": 19932,
+      "budgetHit": false
+    },
+    {
+      "agent": "AI09",
+      "elapsedMs": 47.63,
+      "nodes": 25657,
+      "budgetHit": false
+    },
+    {
+      "agent": "AI10",
+      "elapsedMs": 2000.03,
+      "nodes": 1112150,
+      "budgetHit": true
+    },
+    {
+      "agent": "AI11",
+      "elapsedMs": 2000.02,
+      "nodes": 1157237,
+      "budgetHit": true
+    },
+    {
+      "agent": "AI12",
+      "elapsedMs": 2000.02,
+      "nodes": 1185326,
+      "budgetHit": true
+    },
+    {
+      "agent": "AI13",
+      "elapsedMs": 1987.97,
+      "nodes": 1020300,
+      "budgetHit": false
+    },
+    {
+      "agent": "AI14",
+      "elapsedMs": 1917,
+      "nodes": 1010200,
+      "budgetHit": false
+    },
+    {
+      "agent": "AI15",
+      "elapsedMs": 2000.03,
+      "nodes": 1074511,
+      "budgetHit": true
+    },
+    {
+      "agent": "AI16",
+      "elapsedMs": 2000.03,
+      "nodes": 1038501,
+      "budgetHit": true
+    },
+    {
+      "agent": "AI17",
+      "elapsedMs": 56.71,
+      "nodes": 25428,
+      "budgetHit": false
+    },
+    {
+      "agent": "AI18",
+      "elapsedMs": 22.78,
+      "nodes": 10200,
+      "budgetHit": false
+    },
+    {
+      "agent": "AI19",
+      "elapsedMs": 11.14,
+      "nodes": 5208,
+      "budgetHit": false
+    },
+    {
+      "agent": "AI20",
+      "elapsedMs": 906.98,
+      "nodes": 446699,
+      "budgetHit": true
+    },
+    {
+      "agent": "AI21",
+      "elapsedMs": 5.2,
+      "nodes": 4040,
+      "budgetHit": false
+    },
+    {
+      "agent": "AI22",
+      "elapsedMs": 2000.03,
+      "nodes": 1144218,
+      "budgetHit": true
+    },
+    {
+      "agent": "AI23",
+      "elapsedMs": 2000.03,
+      "nodes": 1059713,
+      "budgetHit": true
+    },
+    {
+      "agent": "AI24",
+      "elapsedMs": 2000.03,
+      "nodes": 1065049,
+      "budgetHit": true
+    },
+    {
+      "agent": "AI25",
+      "elapsedMs": 0.28,
+      "nodes": 100,
+      "budgetHit": false
+    }
+  ],
+  "allLegal": true,
+  "softBudget": true,
+  "engine": "2.1.0",
+  "wasmSHA256": "890b204e073774d82c513b4eb448a7ec58a9552d87e71a05e2315b27b336aacf"
+}

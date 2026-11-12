@@ -1,0 +1,58 @@
+{
+  "format": "laser-linear-model-v1",
+  "algorithm": "ridge regression",
+  "features": [
+    "bias",
+    "score_difference/3",
+    "side_to_move",
+    "side*mean_beam_core_proximity",
+    "side*max_beam_core_proximity",
+    "side*lit_mirror_fraction",
+    "score_difference*remaining_turn_fraction",
+    "side*remaining_core_fraction",
+    "side*slash_fraction",
+    "side*turn_fraction"
+  ],
+  "weights": [
+    -0.04223028942318737,
+    1.7648845100343602,
+    0.0,
+    -0.1248373161034525,
+    0.19725167110028904,
+    0.14977325470209987,
+    -0.14121663629527595,
+    0.01704379349546207,
+    -0.017350029493898952,
+    0.012005070942037017
+  ],
+  "ridge": 1.0,
+  "trainingData": {
+    "games": 600,
+    "positions": 15337,
+    "startSeed": 1000000,
+    "endSeed": 1000599,
+    "mirrorCounts": [
+      20,
+      50,
+      100,
+      150,
+      200
+    ],
+    "behavior": "70% Random + 30% Greedy, per decision",
+    "split": "floor(game / 5) % 5 === 0: validation; otherwise training; stratified across all five mirror counts",
+    "target": "terminal win/draw/loss = 1/0/-1, viewpoint of player to move",
+    "generator": "density-certified-v2"
+  },
+  "evaluation": {
+    "train": {
+      "positions": 12288,
+      "meanSquaredError": 0.3755069944992713,
+      "meanAbsoluteError": 0.4124991913723533
+    },
+    "validation": {
+      "positions": 3049,
+      "meanSquaredError": 0.3177564519181536,
+      "meanAbsoluteError": 0.34279743594834233
+    }
+  }
+}

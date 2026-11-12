@@ -1,0 +1,20 @@
+{
+  "desktop": [
+    "25 agents + human loaded",
+    "Worker decisions, previous/next replay",
+    "Mirror count 6 and 200 + reachability dialog",
+    "Human move + AI response; JSON serialization, import and replay",
+    "25 atlas cards and five detailed explanations",
+    "24-game paired tournament; density filter; CI gate; JSON + CSV serialization + import",
+    "Tournament game replay to terminal",
+    "Stop keeps complete paired legs; no inferential interval"
+  ],
+  "mobile": [
+    "390x844 responsive arena; no document horizontal overflow",
+    "AI25 detail dialog fits viewport",
+    "Experiment layout; tables scroll inside containers"
+  ],
+  "errors": [],
+  "harness": true,
+  "browser": "144.0.7559.96"
+}
