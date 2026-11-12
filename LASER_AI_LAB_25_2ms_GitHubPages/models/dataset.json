@@ -1,0 +1,17 @@
+{
+  "games": 600,
+  "positions": 15337,
+  "startSeed": 1000000,
+  "endSeed": 1000599,
+  "mirrorCounts": [
+    20,
+    50,
+    100,
+    150,
+    200
+  ],
+  "behavior": "70% Random + 30% Greedy, per decision",
+  "split": "floor(game / 5) % 5 === 0: validation; otherwise training; stratified across all five mirror counts",
+  "target": "terminal win/draw/loss = 1/0/-1, viewpoint of player to move",
+  "generator": "density-certified-v2"
+}

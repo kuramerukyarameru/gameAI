@@ -1,0 +1,17 @@
+{
+  "engine": "2.0.0",
+  "wasmSHA256": "c91ac5c5087ab7c41afc86595651100251e45fed096884c7c7684f0c254cdb7e",
+  "generatedBoards": 845,
+  "witnesses": 2535,
+  "fallbackBoards": 240,
+  "fullGames": 150,
+  "aiDecisions": 3160,
+  "determinismChecks": 25,
+  "alphaNegamaxChecks": 24,
+  "proofChecks": 2,
+  "statisticalChecks": 4,
+  "extensionChecks": 1,
+  "timeModeChecks": 25,
+  "learnedPerspectiveChecks": 9,
+  "errors": []
+}
